@@ -143,6 +143,7 @@ def visual_precison_recall(model_lg, model_knn,X_test,y_test):
   plt.xlabel('Recall')
   plt.ylabel('Precision')
   plt.legend()
+  plt.title('Precision & recall')
   plt.savefig('precision_recall_image.pdf')
   plt.show()
 
@@ -164,6 +165,7 @@ def visual_roc(model_lg, model_knn,X_test,y_test):
   plt.xlabel('False Positive Rate')
   plt.ylabel('True Positive Rate')
   plt.legend()
+  plt.title('ROC')
   plt.savefig('roc.pdf')
   plt.show()
 
