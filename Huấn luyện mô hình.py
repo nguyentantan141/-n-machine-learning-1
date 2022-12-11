@@ -143,8 +143,8 @@ def visual_precison_recall(model_lg, model_knn,X_test,y_test):
   plt.xlabel('Recall')
   plt.ylabel('Precision')
   plt.legend()
-  plt.show()
   plt.savefig('precision_recall_image.pdf')
+  plt.show()
 
 # Đánh giá mô hình theo  đường ROC
 def visual_roc(model_lg, model_knn,X_test,y_test):
@@ -164,8 +164,8 @@ def visual_roc(model_lg, model_knn,X_test,y_test):
   plt.xlabel('False Positive Rate')
   plt.ylabel('True Positive Rate')
   plt.legend()
-  plt.show()
   plt.savefig('roc.pdf')
+  plt.show()
 
 def main():
   filename_X='Dog_cat.txt'
