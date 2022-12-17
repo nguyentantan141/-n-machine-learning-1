@@ -21,17 +21,6 @@ from sklearn.metrics import precision_recall_curve
 from sklearn.metrics import roc_auc_score, roc_curve
 import matplotlib.pyplot as plt
 
-# Kiểm tra lỗi ảnh
-def check_corrupted_image(image_file):
-  try:
-    with Image.open(image_file) as img:
-      img.verify()
-      img_new = io.imread(image_file, as_gray=True)
-    return False
-  except Exception as e:
-    print(e)
-    return True
-
 #Lưu dữ liệu sau khi đã xử lí:
 def save_data_image(data,name:str):
   file = open(name, 'wb')
@@ -45,6 +34,17 @@ def save_model(model,name: str):
   filename= name +'.joblib'
   joblib.dump(model, filename)
 
+#Tiền xử lí ảnh
+# Kiểm tra lỗi ảnh
+def check_corrupted_image(image_file):
+  try:
+    with Image.open(image_file) as img:
+      img.verify()
+      img_new = io.imread(image_file, as_gray=True)
+    return False
+  except Exception as e:
+    print(e)
+    return True
 
 # Đọc ảnh
 def read_image(path,size,label):
@@ -63,6 +63,7 @@ def read_image(path,size,label):
   #y.append(image_file.split('.')[0]) # chỉ sử dụng với tập dữ liệu "train" của kagge
   return X,y
 
+
 # Đọc dữ liệu lần đầu chuẩn bị để huấn luyện mô hình
 def read_new_data():
   size=(32,32)
@@ -71,6 +72,7 @@ def read_new_data():
   X,y=read_image(path_dog,size,0)
   X_cat,y_cat=read_image(path_cat,size,1)
   X.extend(X_cat)
+  X=np.hstack((np.ones((m,1)),X))
   y.extend(y_cat)
   X=np.array(X)
   y=np.array(y)
@@ -80,16 +82,6 @@ def read_new_data():
   save_data_image(y,"label_dog_cat.txt")
   return X,y
 
-#Chuẩn hóa dữ liệu
-def scaling_minmax_norm(X):
-  scaler =MinMaxScaler()
-  #Phải thực hiện thao tác fit(data) trước khi điều chỉnh dữ liệu
-  scaler.fit(X)
-  #Thực hiện điều chỉnh dữ liệu
-  X = scaler.transform(X)
-  m=X.shape[0]
-  X_scl=np.hstack((np.ones((m,1)),X))
-  return X_scl
 
 #Phân chia train-test
 def build_img_data(filename_X:str, filename_y:str):
@@ -98,7 +90,6 @@ def build_img_data(filename_X:str, filename_y:str):
   file_X=open(filename_X,'rb')
   X=pickle.load(file_X)
   file_X.close()
-  X=scaling_minmax_norm(X)
   # Đọc dữ liệu y
   file_y = open(filename_y, 'rb')
   y = pickle.load(file_y).ravel()
@@ -170,6 +161,7 @@ def visual_roc(model_lg, model_knn,X_test,y_test):
   plt.show()
 
 def main():
+  read_new_data()
   filename_X='Dog_cat.txt'
   filename_y='label_dog_cat.txt'
   X_train, X_test, y_train, y_test=build_img_data(filename_X,filename_y)
