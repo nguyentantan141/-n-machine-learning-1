@@ -72,9 +72,11 @@ def read_new_data():
   X,y=read_image(path_dog,size,0)
   X_cat,y_cat=read_image(path_cat,size,1)
   X.extend(X_cat)
-  X=np.hstack((np.ones((m,1)),X))
   y.extend(y_cat)
   X=np.array(X)
+  # Thêm vector cột 1 vào X
+  m = X.shape[0]
+  X = np.hstack((np.ones((m, 1)), X))
   y=np.array(y)
   y=LabelBinarizer().fit_transform(y)
   #Lưu dữ liệu ảnh đã xử lý
