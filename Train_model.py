@@ -163,7 +163,6 @@ def visual_roc(model_lg, model_knn,X_test,y_test):
   plt.show()
 
 def main():
-  read_new_data()
   filename_X='Dog_cat.txt'
   filename_y='label_dog_cat.txt'
   X_train, X_test, y_train, y_test=build_img_data(filename_X,filename_y)
