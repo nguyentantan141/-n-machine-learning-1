@@ -1,6 +1,7 @@
 # Thư viện hỗ trợ đọc dữ liệu
 import os
 import numpy as np
+import pandas as pd
 from skimage import io
 from PIL import Image
 # Thư viện hỗ trợ tiền xử lí ảnh, dữ liệu
@@ -17,6 +18,11 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.linear_model import LogisticRegressionCV
 # Trực quan kết quả đánh giá mô hình
+from sklearn.metrics import accuracy_score
+from sklearn.metrics import precision_score
+from sklearn.metrics import recall_score
+from sklearn.metrics import f1_score
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 from sklearn.metrics import precision_recall_curve
 from sklearn.metrics import roc_auc_score, roc_curve
 import matplotlib.pyplot as plt
@@ -120,6 +126,46 @@ def k_NN(X_train,y_train):
   save_model(model,'k_NN')
   return model
 
+#Đánh giá mô hình bằng các bộ chỉ số accuracy, precision, recall, f1
+def evaluation_model(model_lg,model_knn,X_test,y_test):
+  y_hat_lg=model_lg.predict(X_test)
+  y_hat_knn=model_knn.predict(X_test)
+  #Chỉ số của mô hình logistic
+  acc_lg= accuracy_score(y_hat_lg, y_test)
+  pre_lg=precision_score(y_hat_lg, y_test)
+  rec_lg=recall_score(y_hat_lg, y_test)
+  f1_lg=f1_score(y_hat_lg, y_test)
+  #Chỉ số của mô hình k-NN
+  acc_knn = accuracy_score(y_hat_knn, y_test)
+  pre_knn = precision_score(y_hat_knn, y_test)
+  rec_knn = recall_score(y_hat_knn, y_test)
+  f1_knn = f1_score(y_hat_knn, y_test)
+  # Bảng chỉ số của 2 mô hình
+  table={'Score':['Accuracy','Precision','Recall','F1'],'Logistic regression':[acc_lg,pre_lg,rec_lg,f1_lg],
+         'k-NN':[acc_knn,pre_knn,rec_knn,f1_knn]}
+  df=pd.DataFrame(table)
+  df.to_csv('Evalution_model.csv', index = False)
+  print(df)
+  return df
+
+#Vẽ ma trận hỗn hợp
+def visual_confusion_matrix(model_lg,model_knn,X_test,y_test):
+  y_hat_lg = model_lg.predict(X_test)
+  y_hat_knn = model_knn.predict(X_test)
+  f, axes = plt.subplots(1, 2)
+  #Vẽ ma trận hỗn hợp của mô hình logistic
+  cm1 = confusion_matrix(y_test,y_hat_lg)
+  lg=ConfusionMatrixDisplay(confusion_matrix=cm1 )
+  lg.plot(ax=axes[0])
+  lg.ax_.set_title('Logistic regression')
+  #Vẽ ma trận hỗn hợp của mô hình k-nn
+  cm2= confusion_matrix(y_test,y_hat_knn)
+  knn=ConfusionMatrixDisplay(confusion_matrix=cm2 )
+  knn.plot(ax=axes[1])
+  knn.ax_.set_title('k-NN')
+  plt.savefig('Confusion matrix.pdf')
+  plt.show()
+
 # Đánh giá mô hình dựa vào Precision & Recall
 def visual_precison_recall(model_lg, model_knn,X_test,y_test):
   # Lấy xác suất dự đoán nhãn positive của mô hình
@@ -166,11 +212,17 @@ def main():
   filename_X='Dog_cat.txt'
   filename_y='label_dog_cat.txt'
   X_train, X_test, y_train, y_test=build_img_data(filename_X,filename_y)
+  #huấn luyện mô hình
   #logistic_regression_cv(X_train,y_train)
   #k_NN(X_train,y_train)
+  #Tải mô hình đã lưu
   lg_model=joblib.load('Logistic_regression_cv.joblib')
   knn_model=joblib.load('k_NN.joblib')
+  #đánh giá và trực quan hóa kết quả
   visual_precison_recall(lg_model,knn_model,X_test,y_test)
   visual_roc(lg_model,knn_model,X_test,y_test)
+  evaluation_model(lg_model,knn_model,X_test,y_test)
+  visual_confusion_matrix(lg_model,knn_model,X_test,y_test)
+
 if __name__=='__main__':
   main()
