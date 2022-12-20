@@ -163,7 +163,8 @@ def visual_confusion_matrix(model_lg,model_knn,X_test,y_test):
   knn=ConfusionMatrixDisplay(confusion_matrix=cm2 )
   knn.plot(ax=axes[1])
   knn.ax_.set_title('k-NN')
-  plt.savefig('Confusion matrix.pdf')
+  plt.subplots_adjust(wspace=0.40, hspace=0.1)
+  plt.savefig('Confusion matrix.png')
   plt.show()
 
 # Đánh giá mô hình dựa vào Precision & Recall
@@ -183,7 +184,7 @@ def visual_precison_recall(model_lg, model_knn,X_test,y_test):
   plt.ylabel('Precision')
   plt.legend()
   plt.title('Precision & recall')
-  plt.savefig('precision_recall_image.pdf')
+  plt.savefig('precision_recall_image.png')
   plt.show()
 
 # Đánh giá mô hình theo  đường ROC
@@ -205,7 +206,7 @@ def visual_roc(model_lg, model_knn,X_test,y_test):
   plt.ylabel('True Positive Rate')
   plt.legend()
   plt.title('ROC')
-  plt.savefig('roc.pdf')
+  plt.savefig('roc.png')
   plt.show()
 
 def main():
